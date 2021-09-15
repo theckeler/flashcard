@@ -2,5 +2,11 @@ extends layout.pug
 
 block content
     section#content
-        a(href='/cards') Cards
-        
+        if error
+            h2 Error
+        else
+            
+        form(action="/", method="post")
+            label Name Here:
+            input(type="text", name="username")
+            button(type="submit") Send it
