@@ -2,4 +2,11 @@ extends layout.pug
 
 block content
     section#content
-        h2 #{prompt}
+        h2 #{text}
+        if side=="question"
+            p   
+                a(href="?side=answer") Answer
+            p Hint: #{hint}
+        else 
+            p 
+                a(href="?side=question") Question
