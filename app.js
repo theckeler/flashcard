@@ -11,65 +11,36 @@ app.use(
 
 app.use(cookieParser());
 
-//const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
-
 app.set("view engine", "pug");
 
-app.get("/", (req, res) => {
-  const name = req.cookies.username;
-  if (name) {
-    res.redirect("/welcome");
-  } else {
-    res.render("index", { name });
-  }
+const mainRoutes = require("./routes");
+const cardRoutes = require("./routes/cards");
+
+app.use(mainRoutes);
+app.use("/cards", cardRoutes);
+
+app.use((req, res, next) => {
+  const err = new Error("You f*cked up!");
+  err.status = 500;
+  next();
 });
 
-app.post("/goodbye", (req, res) => {
-  res.clearCookie("username");
-  //res.render("goodbye");
-  res.redirect("/");
+app.use((req, res, next) => {
+  const err = new Error("Oh boy! You messed up. 404");
+  err.status = 404;
+  next(err);
 });
 
-app.get("/welcome", (req, res) => {
-  if (req.cookies.username) {
-    res.render("welcome", { name: req.cookies.username });
-  } else {
-    res.redirect("/");
-  }
+app.use((err, req, res, next) => {
+  //const err = new Error("Oh boy! You messed up.");
+  res.locals.error = err;
+  res.status(err.status);
+  res.render("error");
+  next();
 });
 
-app.get("/cards", (req, res) => {
-  res.locals.prompt = "Who is buried?";
-  //res.locals.colors = colors;
-  //res.locals.hint = "Hint here";
-  res.render("card");
-});
-
-app.get("/hello", (req, res) => {
-  res.render("hello", { name: req.cookies.username });
-});
-
-app.post("/hello", (req, res) => {
-  res.cookie("username", req.body.username);
-  //console.log(req.body.username);
-  res.render("hello", { name: req.body.username });
-  //res.redirect("/welcome");
-});
-
-app.post("/", (req, res) => {
-  let error = 0;
-  if (req.body.username) {
-    res.cookie("username", req.body.username);
-    res.redirect("/welcome");
-  } else {
-    if (!req.body.username) {
-      error = 1;
-    }
-    res.render("index", { error: error });
-  }
-  console.log("error:", error);
-});
-
+/*
 app.listen(3000, () => {
   console.log("server running");
 });
+*/
